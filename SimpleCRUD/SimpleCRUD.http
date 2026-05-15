@@ -1,6 +1,102 @@
-@SimpleCRUD_HostAddress = http://localhost:5037
+### Переменные окружения для удобства
+@host = http://localhost:5037
+@contentType = application/json
 
-GET {{SimpleCRUD_HostAddress}}/weatherforecast/
-Accept: application/json
+### 1. Получить всех пользователей (изначально пустой список)
+GET {{host}}/api/users
+Accept: {{contentType}}
 
 ###
+
+### 2. Создать первого пользователя (Diana)
+POST {{host}}/api/users
+Content-Type: {{contentType}}
+
+{
+  "username": "Diana",
+  "email": "diana@example.com"
+}
+
+###
+
+### 3. Создать второго пользователя (Tomik)
+POST {{host}}/api/users
+Content-Type: {{contentType}}
+
+{
+  "username": "Tomik",
+  "email": "tomik@example.com"
+}
+
+###
+
+### 4. Создать пост от имени Diana (свяжется автоматически)
+POST {{host}}/api/posts
+Content-Type: {{contentType}}
+
+{
+  "authorName": "Diana",
+  "content": "Продаю новое поступление трилогии 'Воздушный народ' в твердом переплёте",
+  "product": {
+    "title": "Трилогия 'Воздушный народ'",
+    "price": 2500.00,
+    "imageUrl": "https://example.com"
+  }
+}
+
+###
+
+### 5. Создать пост от неизвестного автора (в массив юзера не попадет)
+POST {{host}}/api/posts
+Content-Type: {{contentType}}
+
+{
+  "authorName": "JohnDoe",
+  "content": "Пост от незарегистрированного аккаунта",
+  "product": {
+    "title": "Случайный товар",
+    "price": 10.00,
+    "imageUrl": "https://example.com"
+  }
+}
+
+###
+
+### 6. Получить всех постов для проверки общей коллекции
+GET {{host}}/api/posts
+Accept: {{contentType}}
+
+###
+
+### 7. Снова проверить пользователей (У Diana должен появиться пост в массиве!)
+GET {{host}}/api/users
+Accept: {{contentType}}
+
+### Переменная для ID (вставьте ваш ID из БД для теста)
+@postId = 6a076ddcb959f3f17789b9c4
+
+### 8. Обновление поста и цены товара (UPDATE)
+PUT {{host}}/api/posts/{{postId}}
+Content-Type: {{contentType}}
+
+{
+  "id": "{{postId}}",
+  "authorName": "Diana",
+  "content": "Цена снижена! Продаю трилогию 'Воздушный народ' в идеальном состоянии",
+  "product": {
+    "title": "Трилогия 'Воздушный народ'",
+    "price": 2100.00,
+    "imageUrl": "https://example.com"
+  }
+}
+
+###
+
+### 9. Удаление поста (DELETE)
+DELETE {{host}}/api/posts/{{postId}}
+
+###
+
+### 10. Проверка пользователей после удаления (массив Diana должен снова стать пустым)
+GET {{host}}/api/users
+Accept: {{contentType}}
